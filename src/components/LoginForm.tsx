@@ -1,4 +1,4 @@
-function Login() {
+function LoginForm() {
   return (
     <div className="bg-white px-10 py-20 shadow-sm rounded-3xl border-2 border-gray-100 w-3/4">
       <h1 className="lg:text-4xl md:text-3xl text-center text-2xl font-semibold">Welcome Back</h1>
@@ -41,4 +41,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginForm;
