@@ -5,7 +5,7 @@ function ForgotPassword() {
         Forgot Password
       </h1>
       <p className="font-medium lg:text-sm text-center text-sm text-gray-400 mt-4">
-        Reset your password
+        Please enter your email address to reset your password
       </p>
       <div className="mt-8">
         <div>
@@ -23,7 +23,7 @@ function ForgotPassword() {
         </div>
         <div className="mt-8 flex flex-col gap-y-4">
           <button className="active:scale-[.99] active:duration-75 transition-all py-3 rounded-xl bg-blue-800 text-white text-lg font-bold">
-            Reset Password
+            Forgot Password
           </button>
         </div>
       </div>
