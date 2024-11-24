@@ -1,7 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+
 
 function App() {
   return (
