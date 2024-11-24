@@ -5,7 +5,7 @@ function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
+  //const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +37,8 @@ function ResetPasswordForm() {
             New password
           </label>
           <input
-            type={showPassword ? 'text' : 'password'}
+            //type={showPassword ? 'text' : 'password'}
+            type='password'
             id="new-password"
             name="new-password"
             className="w-full focus:border-gray-400 outline-none border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent"
