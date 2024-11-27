@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface ResponseData {
@@ -10,9 +10,9 @@ const ForgotPassword: React.FC = () => {
   const [emailError, setEmailError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>('');
-  const BASE_URL = process.env.REACT_APP_BASE_URL
+  // const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-  // Function to validate the email format
+  // Validate email format
   const validateEmail = (): boolean => {
     if (!email) {
       setEmailError('Email is required');
@@ -27,25 +27,29 @@ const ForgotPassword: React.FC = () => {
     return true;
   };
 
+  // Handle toast auto-dismiss
+  useEffect(() => {
+    if (toastMessage) {
+      const timeout = setTimeout(() => setToastMessage(''), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [toastMessage]);
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!validateEmail()) return;
 
     setLoading(true);
-
     try {
-      const response = await axios.post<ResponseData>(`${BASE_URL}/forgot-password`, { email });
-      console.log(BASE_URL);
-      setToastMessage(response.data.message);  // Assuming the backend sends a message in `response.data.message`
+      const response = await axios.post<ResponseData>(`http://localhost:8082/forgot-password?email=${email}`);
+      setToastMessage(response.data.message);
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        // Handle axios error with a response (e.g., backend validation issues)
-        setToastMessage(error.response.data.message || 'An error occurred, please try again.');
-      } else {
-        // Handle unexpected error
-        setToastMessage('An error occurred, please try again.');
-      }
+      const errorMessage =
+        axios.isAxiosError(error) && error.response?.data?.message
+          ? error.response.data.message
+          : 'An error occurred, please try again.';
+      setToastMessage(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -85,12 +89,12 @@ const ForgotPassword: React.FC = () => {
         </div>
         <div className="mt-8 flex flex-col gap-y-4">
           <button
-            onClick={handleSubmit}
-            className="active:scale-[.99] active:duration-75 transition-all py-3 rounded-xl bg-blue-800 text-white text-lg font-bold"
+            onClick={(e) => handleSubmit(e)}
+            className="active:scale-[.99] active:duration-75 transition-all py-3 rounded-xl bg-blue-800 text-white text-lg font-bold flex items-center justify-center"
             disabled={loading}
           >
             {loading ? (
-              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
             ) : (
               'Forgot Password'
             )}
@@ -99,6 +103,6 @@ const ForgotPassword: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ForgotPassword;

@@ -1,25 +1,64 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function LoginForm() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [emailValid, setEmailValid] = useState(true); // To track if email is valid
-  const [emailTouched, setEmailTouched] = useState(false); // To track if email field was touched
+  const [username, setUsername] = useState(""); // Change 'email' to 'username'
+  const [password, setPassword] = useState("");
+  const [usernameValid, setUsernameValid] = useState(true); // Track username validity
+  const [usernameTouched, setUsernameTouched] = useState(false); // Track if the username field was touched
+  const [passwordValid, setPasswordValid] = useState(true); // Track password validity
+  const [loading, setLoading] = useState(false); // Track loading state
+  const [error, setError] = useState(""); // Track errors from login attempt
 
   const handleForgotPassword = () => {
     navigate("/forgot-password");
   };
 
-  const handleEmailBlur = () => {
-    setEmailTouched(true); // Mark the email field as touched when the user leaves the field
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    setEmailValid(emailRegex.test(email));
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value); // Handle username input change
   };
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value); // Handle password input change
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(""); // Reset error state
+
+    // Simple validation for password length
+    if (password.length < 6) {
+      setPasswordValid(false);
+      setLoading(false);
+      return;
+    }
+
+    // Create a JSON object
+    const loginData = {
+      username: username, // Send 'username' as a string
+      password: password, // Send 'password' as a string
+    };
+
+    // Perform login request with JSON payload
+    try {
+      await axios.post("http://localhost:8082/users/login", loginData, {
+        headers: {
+          "Content-Type": "application/json", // Set the content type to JSON
+        },
+        withCredentials: true, // Include credentials with the request
+      });
+      console.log(loginData);
+      // Optionally, navigate to a protected page after successful login
+      navigate("/dashboard"); // Example redirect after successful login
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,25 +67,21 @@ function LoginForm() {
       <p className="font-medium lg:text-sm text-center text-sm text-gray-400 mt-4">
         Welcome back! Please enter your details.
       </p>
-      <div className="mt-8">
+      <form onSubmit={handleSubmit} className="mt-8">
         <div>
-          <label className="text-lg font-medium" htmlFor="email">
-            Email:
+          <label className="text-lg font-medium" htmlFor="username">
+            Username:
           </label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={handleEmailChange}
-            onBlur={handleEmailBlur}
-            className={`w-full focus:border-gray-400 outline-none border-2 rounded-xl p-4 mt-1 bg-transparent ${
-              emailValid ? "border-gray-100" : "border-red-500"
-            }`}
-            placeholder="Enter your email"
+            type="text"
+            id="username" // Updated 'email' to 'username'
+            value={username} // Bind username state
+            onChange={handleUsernameChange} // Handle username change
+            className={`w-full focus:border-gray-400 outline-none border-2 rounded-xl p-4 mt-1 bg-transparent ${usernameValid ? "border-gray-100" : "border-red-500"}`}
+            placeholder="Enter your username" // Update placeholder text
           />
-          {/* Validation message */}
-          {!emailValid && emailTouched && (
-            <p className="text-red-500 text-sm mt-2">Please enter a valid email address.</p>
+          {!usernameValid && usernameTouched && (
+            <p className="text-red-500 text-sm mt-2">Please enter a valid username.</p>
           )}
         </div>
         <div className="mt-4">
@@ -54,10 +89,16 @@ function LoginForm() {
             Password:
           </label>
           <input
-            className="w-full border-2 outline-none focus:border-gray-400 border-gray-100 rounded-xl p-4 mt-1 bg-transparent"
             type="password"
+            id="password"
+            value={password}
+            onChange={handlePasswordChange}
+            className={`w-full border-2 outline-none focus:border-gray-400 ${passwordValid ? "border-gray-100" : "border-red-500"} rounded-xl p-4 mt-1 bg-transparent`}
             placeholder="Enter your password"
           />
+          {!passwordValid && password.length === 0 && (
+            <p className="text-red-500 text-sm mt-2">Password is required.</p>
+          )}
         </div>
         <div className="mt-8 flex justify-end items-center">
           <button
@@ -68,11 +109,16 @@ function LoginForm() {
           </button>
         </div>
         <div className="mt-8 flex flex-col gap-y-4">
-          <button className="active:scale-[.99] active:duration-75 transition-all py-3 rounded-xl bg-blue-800 text-white text-lg font-bold">
-            Sign in
+          <button
+            type="submit"
+            className="active:scale-[.99] active:duration-75 transition-all py-3 rounded-xl bg-blue-800 text-white text-lg font-bold"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
           </button>
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         </div>
-      </div>
+      </form>
     </div>
   );
 }
