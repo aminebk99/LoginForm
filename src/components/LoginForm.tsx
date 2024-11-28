@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function LoginForm() {
@@ -13,47 +13,40 @@ function LoginForm() {
   const [loading, setLoading] = useState(false); // Track loading state
   const [error, setError] = useState(""); // Track errors from login attempt
 
-  const handleForgotPassword = () => {
-    navigate("/forgot-password");
-  };
-
   const handleUsernameChange = (e) => {
-    setUsername(e.target.value); // Handle username input change
+    setUsername(e.target.value); 
   };
 
   const handlePasswordChange = (e) => {
-    setPassword(e.target.value); // Handle password input change
+    setPassword(e.target.value); 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(""); // Reset error state
+    setError("");
 
-    // Simple validation for password length
     if (password.length < 6) {
       setPasswordValid(false);
       setLoading(false);
       return;
     }
 
-    // Create a JSON object
     const loginData = {
-      username: username, // Send 'username' as a string
-      password: password, // Send 'password' as a string
+      username: username, 
+      password: password,
     };
 
-    // Perform login request with JSON payload
     try {
       await axios.post("http://localhost:8082/users/login", loginData, {
         headers: {
-          "Content-Type": "application/json", // Set the content type to JSON
+          "Content-Type": "application/json", 
         },
-        withCredentials: true, // Include credentials with the request
+        withCredentials: true, 
       });
       console.log(loginData);
-      // Optionally, navigate to a protected page after successful login
-      navigate("/dashboard"); // Example redirect after successful login
+      
+      navigate("/dashboard");
     } catch (err) {
       setError("An error occurred. Please try again.");
     } finally {
@@ -74,11 +67,11 @@ function LoginForm() {
           </label>
           <input
             type="text"
-            id="username" // Updated 'email' to 'username'
-            value={username} // Bind username state
-            onChange={handleUsernameChange} // Handle username change
+            id="username" 
+            value={username} 
+            onChange={handleUsernameChange} 
             className={`w-full focus:border-gray-400 outline-none border-2 rounded-xl p-4 mt-1 bg-transparent ${usernameValid ? "border-gray-100" : "border-red-500"}`}
-            placeholder="Enter your username" // Update placeholder text
+            placeholder="Enter your username" 
           />
           {!usernameValid && usernameTouched && (
             <p className="text-red-500 text-sm mt-2">Please enter a valid username.</p>
@@ -101,12 +94,11 @@ function LoginForm() {
           )}
         </div>
         <div className="mt-8 flex justify-end items-center">
-          <button
+          <Link to={'/forgot-password'}
             className="font-medium text-base text-blue-800"
-            onClick={handleForgotPassword}
           >
             Forgot password
-          </button>
+          </Link>
         </div>
         <div className="mt-8 flex flex-col gap-y-4">
           <button
@@ -114,7 +106,11 @@ function LoginForm() {
             className="active:scale-[.99] active:duration-75 transition-all py-3 rounded-xl bg-blue-800 text-white text-lg font-bold"
             disabled={loading}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? (
+              <div className="w-6 h-6 border-4 border-t-4 border-blue-800 rounded-full animate-spin"></div>
+            ) : (
+              "Sign in"
+            )}
           </button>
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         </div>
