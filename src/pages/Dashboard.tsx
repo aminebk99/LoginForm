@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -7,55 +7,53 @@ import Header from "../components/Header";
 interface UserData {
   username: string;
   email: string;
+  role?: string;  // Make role optional here
 }
 
 function Dashboard() {
   const [data, setData] = useState<UserData | null>(null);
   const navigate = useNavigate();
 
-  // Function to fetch user data
-  const fetchData = async () => {
+  // Clear session storage and cookies
+  const clearSessionAndCookies = () => {
+    Cookies.remove("yourCookieName", { path: '/' });
+    sessionStorage.removeItem("userData");
+  };
+
+  // Fetch user data from the server
+  const fetchData = useCallback(async () => {
     try {
       const res = await axios.get("http://localhost:8082/users/data", {
         withCredentials: true,
       });
 
-      // If data exists, set it and continue
-      if (res.data && res.data.username && res.data.email) {
+      if (res.data?.username && res.data?.email) {
         setData(res.data);
-        // Save to session storage (not recommended for sensitive data, consider using a secure store)
         sessionStorage.setItem("userData", JSON.stringify(res.data));
       } else {
-        // Remove session storage and cookies
-        Cookies.remove("yourCookieName", { path: '/' }); // Adjust path if necessary
-        sessionStorage.removeItem("userData");
+        clearSessionAndCookies();
         navigate("/login");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      // Remove any stored session or cookies if the request fails
-      Cookies.remove("yourCookieName", { path: '/' }); // Adjust path if necessary
-      sessionStorage.removeItem("userData");
+      clearSessionAndCookies();
       navigate("/login");
-    }
-  };
-
-  useEffect(() => {
-    // Check if data exists in sessionStorage
-    const storedData = sessionStorage.getItem("userData");
-
-    if (storedData) {
-      const parsedData: UserData = JSON.parse(storedData);
-      setData(parsedData);  // Load from session storage if exists
-    } else {
-      // If not in session storage, fetch fresh data
-      fetchData();
     }
   }, [navigate]);
 
   useEffect(() => {
+    const storedData = sessionStorage.getItem("userData");
+
+    if (storedData) {
+      const parsedData: UserData = JSON.parse(storedData);
+      setData(parsedData);
+    } else {
+      fetchData();
+    }
+  }, [fetchData]);
+
+  useEffect(() => {
     if (data) {
-      // Save data to sessionStorage to persist after page refresh
       sessionStorage.setItem("userData", JSON.stringify(data));
     }
   }, [data]);
@@ -64,12 +62,9 @@ function Dashboard() {
     <div className="w-full h-screen flex flex-col">
       <Header data={data} />
 
-      {/* Main Content */}
       <div className="w-full h-full flex justify-center items-center flex-col">
         <h2 className="text-3xl">
-          {data ? (
-            `Welcome ${data.username}`
-          ) : (
+          {data ? `Welcome ${data.username}` : (
             <div className="w-16 h-16 border-4 border-t-4 border-blue-500 rounded-full animate-spin"></div>
           )}
         </h2>
