@@ -25,7 +25,7 @@ function Header({ data }: HeaderProps) {
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:8082/users/logout", {}, { withCredentials: true });
-      Cookies.remove();
+      Cookies.remove("JSESSIONID");
       sessionStorage.removeItem("userData");
       navigate("/login");
     } catch (error) {

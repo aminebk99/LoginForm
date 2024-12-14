@@ -5,23 +5,21 @@ import axios from "axios";
 function LoginForm() {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState(""); // Change 'email' to 'username'
+  const [username, setUsername] = useState(""); 
   const [password, setPassword] = useState("");
-  const [usernameValid, setUsernameValid] = useState(true); // Track username validity
-  const [usernameTouched, setUsernameTouched] = useState(false); // Track if the username field was touched
-  const [passwordValid, setPasswordValid] = useState(true); // Track password validity
-  const [loading, setLoading] = useState(false); // Track loading state
-  const [error, setError] = useState(""); // Track errors from login attempt
+  const [passwordValid, setPasswordValid] = useState(true); 
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(""); 
 
-  const handleUsernameChange = (e) => {
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value); 
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value); 
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -33,19 +31,18 @@ function LoginForm() {
     }
 
     const loginData = {
-      username: username, 
-      password: password,
+      username,
+      password,
     };
 
     try {
       await axios.post("http://localhost:8082/users/login", loginData, {
         headers: {
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
-        withCredentials: true, 
+        withCredentials: true,
       });
       console.log(loginData);
-      
       navigate("/dashboard");
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -70,12 +67,9 @@ function LoginForm() {
             id="username" 
             value={username} 
             onChange={handleUsernameChange} 
-            className={`w-full focus:border-gray-400 outline-none border-2 rounded-xl p-4 mt-1 bg-transparent ${usernameValid ? "border-gray-100" : "border-red-500"}`}
+            className={`w-full focus:border-gray-400 outline-none border-2 rounded-xl p-4 mt-1 bg-transparent ${username ? "border-gray-100" : "border-red-500"}`}
             placeholder="Enter your username" 
           />
-          {!usernameValid && usernameTouched && (
-            <p className="text-red-500 text-sm mt-2">Please enter a valid username.</p>
-          )}
         </div>
         <div className="mt-4">
           <label className="text-lg font-medium" htmlFor="password">
@@ -94,9 +88,7 @@ function LoginForm() {
           )}
         </div>
         <div className="mt-8 flex justify-end items-center">
-          <Link to={'/forgot-password'}
-            className="font-medium text-base text-blue-800"
-          >
+          <Link to={'/forgot-password'} className="font-medium text-base text-blue-800">
             Forgot password
           </Link>
         </div>

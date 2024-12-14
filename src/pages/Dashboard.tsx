@@ -7,7 +7,7 @@ import Header from "../components/Header";
 interface UserData {
   username: string;
   email: string;
-  role?: string;  // Make role optional here
+  role?: string;
 }
 
 function Dashboard() {

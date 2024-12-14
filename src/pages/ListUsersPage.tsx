@@ -1,11 +1,11 @@
-import TableOfUsers from "../components/TableOfUsers"
+import TableOfUsers from "../components/TableOfUsers";
 
 function ListUsersPage() {
   return (
     <div>
-            <TableOfUsers />
+      <TableOfUsers />
     </div>
-  )
+  );
 }
 
-export default ListUsersPage
+export default ListUsersPage;

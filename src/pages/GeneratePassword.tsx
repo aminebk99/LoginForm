@@ -35,17 +35,15 @@ const GeneratePassword: React.FC = () => {
       password += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
     }
 
-    // Shuffle the password to ensure randomness
+
     return password.split('').sort(() => Math.random() - 0.5).join('');
   };
 
-  // Handle password generation when the button is clicked
   const handleGeneratePassword = (): void => {
     const generatedPassword = generateRandomPassword(startOption);
     setPassword(generatedPassword);
   };
 
-  // Handle form submission (for demonstration purposes)
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     setLoading(true);
@@ -62,7 +60,6 @@ const GeneratePassword: React.FC = () => {
         Choose the options below to generate a complex password.
       </p>
       <form onSubmit={handleSubmit} className="mt-8">
-        {/* Password Generation Options */}
         <div className="flex items-center justify-between">
           <label className="text-lg font-medium" htmlFor="password-start">
             Start With:
@@ -79,7 +76,6 @@ const GeneratePassword: React.FC = () => {
           </select>
         </div>
         
-        {/* Generated Password */}
         <div className="mt-4">
           <label className="text-lg font-medium" htmlFor="password">
             Generated Password:
@@ -103,7 +99,6 @@ const GeneratePassword: React.FC = () => {
           </div>
         </div>
 
-        {/* Generate Button */}
         <div className="mt-4">
           <button
             type="button"
