@@ -6,6 +6,7 @@ import ErrorPage from "./pages/ErrorPage";
 import Dashboard from "./pages/Dashboard";
 import GeneratePassword from "./pages/GeneratePassword";
 import ListUsersPage from "./pages/ListUsersPage";
+import RegisterPage from "./pages/RegisterPage";
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />}/>
       <Route path="/login" element={<LoginPage />}/>
+      <Route path="/register" element={<RegisterPage />}/>
       <Route path="/forgot-password" element={<ForgotPasswordPage />}/>
       <Route path="/reset-password" element={<ResetPasswordPage />}/>
       <Route path="/dashboard" element={<Dashboard />}/>

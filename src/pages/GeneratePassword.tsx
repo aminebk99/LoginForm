@@ -99,11 +99,11 @@ const GeneratePassword: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 w-full flex justify-end">
           <button
             type="button"
             onClick={handleGeneratePassword}
-            className="py-3 rounded-xl bg-blue-800 text-white text-lg font-bold"
+            className="py-3 px-3 rounded-xl bg-blue-800 text-white text-lg font-bold"
           >
             Generate Password
           </button>

@@ -1,31 +1,33 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from 'axios';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-function LoginForm() {
+function RegisterForm() {
   const navigate = useNavigate();
 
+  // New state for email and role
   const [username, setUsername] = useState("");
-  const [usernameValid, setUsernameValid] = useState(true);
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(""); // Email state
+  const [role, setRole] = useState("MODERATOR"); // Default role state
   const [passwordValid, setPasswordValid] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setUsername(value);
-
-    // Revalidate the username (if it's empty, it's invalid)
-    setUsernameValid(value.length > 0);
+    setUsername(e.target.value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
+    setPassword(e.target.value);
+  };
 
-    // Validate password length (must be at least 6 characters)
-    setPasswordValid(value.length >= 6 || value.length === 0);
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRole(e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,24 +35,27 @@ function LoginForm() {
     setLoading(true);
     setError("");
 
-    // Ensure both fields are valid
-    if (username.length === 0 || password.length < 6) {
-      setUsernameValid(username.length > 0);
-      setPasswordValid(password.length >= 6);
+    if (password.length < 6) {
+      setPasswordValid(false);
       setLoading(false);
       return;
     }
 
-    const loginData = { username, password };
+    const registerData = {
+      username,
+      password,
+      email,
+      role,
+    };
 
     try {
-      await axios.post("http://localhost:8082/users/login", loginData, {
+      await axios.post("http://localhost:8082/users/register", registerData, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
       });
-      console.log(loginData);
+      console.log(registerData);
       navigate("/dashboard");
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -75,12 +80,22 @@ function LoginForm() {
             id="username"
             value={username}
             onChange={handleUsernameChange}
-            className={`w-full focus:border-gray-400 outline-none border-2 ${usernameValid ? "border-gray-100" : "border-red-500"} rounded-xl p-4 mt-1 bg-transparent`}
+            className={`w-full focus:border-gray-400 outline-none border-2 rounded-xl p-4 mt-1 bg-transparent ${username ? "border-gray-100" : "border-red-500"}`}
             placeholder="Enter your username"
           />
-          {!usernameValid && username.length === 0 && (
-            <p className="text-red-500 text-sm mt-2">Username is required.</p>
-          )}
+        </div>
+        <div className="mt-4">
+          <label className="text-lg font-medium" htmlFor="email">
+            Email:
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={handleEmailChange}
+            className={`w-full focus:border-gray-400 outline-none border-2 rounded-xl p-4 mt-1 bg-transparent ${email ? "border-gray-100" : "border-red-500"}`}
+            placeholder="Enter your email"
+          />
         </div>
         <div className="mt-4">
           <label className="text-lg font-medium" htmlFor="password">
@@ -97,9 +112,21 @@ function LoginForm() {
           {!passwordValid && password.length === 0 && (
             <p className="text-red-500 text-sm mt-2">Password is required.</p>
           )}
-          {!passwordValid && password.length < 6 && password.length > 0 && (
-            <p className="text-red-500 text-sm mt-2">Password must be at least 6 characters long.</p>
-          )}
+        </div>
+        <div className="mt-4">
+          <label className="text-lg font-medium" htmlFor="role">
+            Role:
+          </label>
+          <select
+            id="role"
+            value={role}
+            onChange={handleRoleChange}
+            className="w-full border-2 outline-none focus:border-gray-400 rounded-xl p-4 mt-1 bg-transparent"
+          >
+            <option value="MODERATOR">Moderator</option>
+            <option value="ADMIN">Admin</option>
+            <option value="USER">User</option>
+          </select>
         </div>
         <div className="mt-8 flex justify-end items-center">
           <Link to={'/forgot-password'} className="font-medium text-base text-blue-800">
@@ -125,4 +152,4 @@ function LoginForm() {
   );
 }
 
-export default LoginForm;
+export default RegisterForm;
